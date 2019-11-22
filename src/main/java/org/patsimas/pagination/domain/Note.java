@@ -17,10 +17,13 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "id")
     private Integer id;
+
     @Column(name = "userId")
     private Integer userId;
+
     @Column(name = "title")
     private String title;
+
     @Column(name = "body")
     private String body;
 }

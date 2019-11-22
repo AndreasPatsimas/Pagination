@@ -1,11 +1,15 @@
 package org.patsimas.pagination.config;
 
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -20,6 +24,8 @@ import java.util.HashMap;
 @EnableJpaRepositories(basePackages = "org.patsimas.pagination.repositories",
         entityManagerFactoryRef = "entityManager",
         transactionManagerRef= "transactionManager"
+)
+@EnableSolrRepositories(basePackages = "org.patsimas.pagination.repositories"
 )
 public class DataSourceConfiguration {
 
@@ -69,5 +75,15 @@ public class DataSourceConfiguration {
         transactionManager.setEntityManagerFactory(
                 entityManager().getObject());
         return transactionManager;
+    }
+
+    @Bean
+    public SolrClient solrClient() {
+        return new HttpSolrClient.Builder(env.getProperty("spring.data.solr.host")).build();
+    }
+
+    @Bean
+    public SolrTemplate solrTemplate(SolrClient client) {
+        return new SolrTemplate(client);
     }
 }
